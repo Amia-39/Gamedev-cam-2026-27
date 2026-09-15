@@ -1,0 +1,53 @@
+<body>
+<style>
+body {
+  background-color: #000000;
+  color: #ddaacc;
+ }
+</style>
+<h1 align=center>t1a03-forms-cam.html</h1>
+
+<form >
+
+First Name:<input type="name" id="name" value="Cam"><br>
+Checkbox: <br>
+Games:<input type=checkbox><br>
+Food:<input type=checkbox><br>
+Radio Buttons:<br>
+Yay <input type=radio name="ex" value=""><br>
+Nay <input type=radio name="ex" value=""><br>
+
+Hidden:<input type=hidden ><br>
+File:<input type=file><br>
+Reset:<input type=reset><br>
+Submit:<input type=submit><br>
+
+Button: <input type=button value="Click Me" onClick="{
+	document.getElementById('myArea1').value = 'Hey look it\'s text 2'
+}"><br>
+Textarea:<br>
+<textarea id="myArea1" cols=60 rows=5>Wow it's text one</textarea><br>
+
+Sauce?<br>
+<select id="mySelect1" size=3 onChange="{
+	document.getElementById('mySelect1').value =
+document.getElementById('mySelect1').value
+}">
+<option value='1'>More
+<option value='2'>Regular
+<option value='3'>Less
+</select><br><br>
+
+How much Swag?<br>
+0 <input type="range" name="swag" min="0" max="100"> 100 <br><br>
+
+Let me call you 
+<input type="tel" id="phone" name="phone" placeholder="123-4567-890" pattern="[0-9]{3}-[0-9]{4}-[0-9]{3}" required><br><br>
+
+
+
+
+
+
+</form>
+</body>
