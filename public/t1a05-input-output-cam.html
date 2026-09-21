@@ -1,0 +1,83 @@
+<style>
+body {
+	background-color: #000000;
+	color: #ddaacc;
+}
+
+a:link {
+	color: #8888ff;
+}
+</style>
+
+
+
+
+<body>
+
+
+
+<h2 align=center>t1a05-input-output-cam.html</h2>
+
+<a href="https://www.w3schools.com/jsref/prop_html_innerhtml.asp">Good reference to Javascript input output</a>
+
+
+<h4> Example input output code </h4>
+<pre> 
+
+	myIn01 = document.getElementById('myNum01').value
+	document.getElementById('myNum01').innerHTML = 'hi'
+	
+</pre>
+
+<h4>Example working code</h4>
+
+<input id="myNum01" type=number value="4"><br>
+
+<input type=button value="myEvent squares" onclick="{
+	let myIn01 = parseFloat(document.getElementById('myNum01').value)
+	let myAnswer01 = myIn01 * myIn01
+	document.getElementById('myDiv01').innerHTML = myIn01 + ' squared = ' + myAnswer01
+}"><br>
+
+<div id="myDiv01">...</div>
+
+<br><br><br><br>
+
+<h2> Now the fun stuff </h2><br>
+
+
+Adding<br>
+<input id="myNum02" type=number value="4"><br>
+<input id="myNum03" type=number value="4"><br>
+
+<input type=button value="myEvent add" onclick="{
+	let myIn02 = parseFloat(document.getElementById('myNum02').value)
+	let myIn03 = parseFloat(document.getElementById('myNum03').value)
+	let myAnswer02 = myIn02 + myIn03
+	document.getElementById('myDiv02').innerHTML = myIn02 + ' + ' + myIn03 + ' = ' + myAnswer02
+}"><br>
+
+<div id="myDiv02">...</div><br><br>
+
+
+Subtracting<br>
+<input id="myNum04" type=number value="4"><br>
+<input id="myNum05" type=number value="4"><br>
+
+<input type=button value="myEvent subtract" onclick="{
+	let myIn04 = parseFloat(document.getElementById('myNum04').value)
+	let myIn05 = parseFloat(document.getElementById('myNum05').value)
+	let myAnswer03 = myIn04 - myIn05
+	document.getElementById('myDiv03').innerHTML = myIn04 + ' - ' + myIn05 + ' = ' + myAnswer03
+}"><br>
+
+<div id="myDiv03">...</div><br><br>
+
+
+
+
+
+
+
+
+</body>
