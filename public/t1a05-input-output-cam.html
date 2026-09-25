@@ -12,7 +12,6 @@ a:link {
 
 
 
-<body>
 
 
 
@@ -74,10 +73,30 @@ Subtracting<br>
 <div id="myDiv03">...</div><br><br>
 
 
+Multplication<br>
+<input id="myNum06" type=number value="4"><br>
+<input id="myNum07" type=number value="4"><br>
+
+<input type=button value="myEvent multiply" onclick="{
+	let myIn06 = parseFloat(document.getElementById('myNum06').value)
+	let myIn07 = parseFloat(document.getElementById('myNum07').value)
+	let myAnswer04 = myIn06 * myIn07
+	document.getElementById('myDiv04').innerHTML = myIn06 + ' * ' + myIn07 + ' = ' + myAnswer04
+}"><br>
+
+<div id="myDiv04">...</div><br><br>
 
 
+Dividing<br>
+<input id="myNum08" type=number value="4"><br>
+<input id="myNum09" type=number value="4"><br>
 
+<input type=button value="myEvent divide" onclick="{
+	let myIn08 = parseFloat(document.getElementById('myNum08').value)
+	let myIn09 = parseFloat(document.getElementById('myNum09').value)
+	let myAnswer05 = myIn08 / myIn09
+	document.getElementById('myDiv05').innerHTML = myIn08 + ' / ' + myIn09 + ' = ' + myAnswer05
+}"><br>
 
+<div id="myDiv05">...</div><br><br>
 
-
-</body>
