@@ -1,0 +1,34 @@
+<style>
+body {
+	background-color: #000000;
+	color: #ddaacc;
+}
+</style>
+
+<h2 align=center>t1a12-objects-cam.html</h2>
+<script>
+
+</script>
+
+Objects are stored named variables
+
+<h4>Example working code</h4>
+
+<input type=text id="myText01" value="...">
+
+<input type=button value="Example Object Set and Show" onclick="{
+  let myPerson = {
+    'firstName' : 'Jane',
+    'lastName' : 'Doe',
+    'age' : '50',
+    'eyeColour' : 'blue'
+  }
+
+  document.getElementById('myDiv01').innerHTML = '<br>myPerson Object has properties: <br>'
+  document.getElementById('myDiv01').innerHTML += 'firstName: ' + myPerson.firstName + '<br>'
+  document.getElementById('myDiv01').innerHTML += 'lastName: ' + myPerson.lastName + '<br>'
+  document.getElementById('myDiv01').innerHTML += 'age: ' + myPerson.age + '<br>'
+  document.getElementById('myDiv01').innerHTML += 'eyeColour: ' + myPerson.eyeColour + '<br>'
+}">
+
+<div id="myDiv01">...</div>
