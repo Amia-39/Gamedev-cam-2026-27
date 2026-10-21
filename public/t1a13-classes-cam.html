@@ -1,0 +1,29 @@
+<style>
+body {
+	background-color: #000000;
+	color: #ddaacc;
+}
+</style>
+
+<h2 align=center>t1a13-classes-cam.html</h2>
+
+
+<h4>Example working code</h4>
+
+<input type="button" value="example class set and show class animal" onclick="{
+
+  class myAnimal {
+    constructor(passName, passAge) {
+      this.myName = passName;
+      this.myAge = passAge;
+    }
+    myShow(){
+      document.getElementById('myDiv01').innerHTML = 'Hello '+ this.myName + '. You are ' + this.myAge + ' years old<br>'
+    }
+  }
+
+  myDog = new myAnimal('Snickers', 5)
+  myDog.myShow()
+}">
+
+<div id="myDiv01">...</div>
