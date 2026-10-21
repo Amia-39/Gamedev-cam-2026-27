@@ -1,0 +1,45 @@
+<style>
+body {
+	background-color: #000000;
+	color: #ddaacc;
+}
+</style>
+
+<h2 align=center>t1a14-extend-class-cam.html</h2>
+
+<script>
+  class myAnimal {
+    constructor(passName, passAge) {
+      this.myName = passName;
+      this.myAge = passAge;
+    }
+    myShow(){
+      document.getElementById('myDiv01').innerHTML = 'Hello '+ this.myName + '. You are ' + this.myAge + ' years old<br>'
+    }
+  }
+</script>
+
+<h4>Example working code</h4>
+
+<input type="button" value="example class set and show class animal" onclick="{
+  myDog = new myAnimal('Snickers', 5)
+  myDog.myShow()
+}">
+
+<h4>example extending class show</h4>
+
+<input type="button" value="example extend class animal" onclick="{
+
+  class myCat extends myAnimal {
+
+    myShow(){
+      document.getElementById('myDiv01').innerHTML = this.myName + ' is a great cat<br>'
+    }
+  }
+
+  let myPet = new myCat('Fluffy', 14)
+  myPet.myShow()
+
+}">
+
+<div id="myDiv01">...</div>
