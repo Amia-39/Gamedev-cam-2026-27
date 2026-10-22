@@ -1,0 +1,307 @@
+/* ---------- Theme ---------- */
+:root {
+  --bg: #15121c;
+  --panel: #241e30;
+  --text: #eee;
+  --muted: #9a93ab;
+  --accent: #e0a63a;
+  --attack: #d9534f;
+  --skill: #4a90d9;
+  --good: #5cb85c;
+}
+:root:not([data-theme='light']) {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Georgia, 'Times New Roman', serif;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+#app {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 10px;
+}
+h2 {
+  text-align: center;
+  margin: 8px 0;
+}
+
+/* ---------- Basic pieces ---------- */
+button {
+  font: inherit;
+  cursor: pointer;
+  background: var(--accent);
+  color: #1a1200;
+  border: 0;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: bold;
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.ic {
+  /* small inline picture: as tall as the text around it */
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  vertical-align: -0.15em;
+  object-fit: contain;
+}
+.center {
+  text-align: center;
+}
+.muted {
+  color: var(--muted);
+}
+.small {
+  font-size: 12px;
+}
+.accent {
+  color: var(--accent);
+}
+.good {
+  color: var(--good);
+}
+.spaced {
+  margin: 12px;
+}
+.big-icon {
+  font-size: 56px;
+  text-align: center;
+}
+
+/* Horizontal group of things; `.stack` makes it vertical. */
+.row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 10px 0;
+}
+.row.stack {
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Rounded box used for enemies, heroes and shop items. */
+.panel {
+  background: var(--panel);
+  border: 2px solid #3a3350;
+  border-radius: 10px;
+  padding: 10px;
+  min-width: 150px;
+  text-align: center;
+}
+
+/* Status bars (top of every screen and the player's fight stats). */
+.bar {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  background: var(--panel);
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+.bar .push-right {
+  margin-left: auto;
+}
+.relic-icon {
+  cursor: help;
+  font-size: 18px;
+}
+.potion-chip {
+  background: #0005;
+  border-radius: 12px;
+  padding: 2px 8px;
+  margin-right: 4px;
+}
+.potion-chip.selected {
+  outline: 2px solid var(--accent);
+}
+.potion-chip a {
+  cursor: pointer;
+}
+.potion-chip .discard {
+  color: var(--muted);
+}
+
+/* ---------- Fight ---------- */
+.panel.targetable {
+  border-color: var(--attack);
+  cursor: crosshair;
+  box-shadow: 0 0 12px var(--attack);
+}
+.enemy-art {
+  font-size: 48px;
+}
+.intent {
+  color: var(--accent);
+  font-size: 14px;
+  min-height: 20px;
+}
+.hp {
+  height: 10px;
+  background: #000;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 4px 0;
+}
+.hp i {
+  display: block;
+  height: 100%;
+  background: var(--attack);
+}
+.log {
+  background: #0006;
+  border-radius: 6px;
+  padding: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  height: 58px;
+  overflow: auto;
+  margin: 6px 0;
+}
+
+/* ---------- Cards ---------- */
+.card {
+  width: 122px;
+  min-height: 190px;
+  background: var(--panel);
+  border: 2px solid #4b4360;
+  border-radius: 8px;
+  padding: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  transition: transform 0.1s;
+}
+.card:hover {
+  transform: translateY(-8px);
+}
+.card.A {
+  border-color: var(--attack);
+}
+.card.S {
+  border-color: var(--skill);
+}
+.card.P {
+  border-color: var(--accent);
+}
+.card.selected {
+  transform: translateY(-14px);
+  box-shadow: 0 0 10px #fff;
+}
+.card.unaffordable {
+  opacity: 0.45;
+}
+.card b {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+.card-name {
+  color: #fff;
+}
+.card.upgraded .card-name {
+  color: var(--good);
+}
+.card-cost {
+  color: var(--accent);
+}
+.card .art {
+  width: 100%;
+  aspect-ratio: 100 / 64;
+  border-radius: 5px;
+  display: block;
+  margin: 4px 0 2px;
+}
+.card-text {
+  margin: auto 0;
+  text-align: center;
+  color: #ccc;
+}
+
+/* ---------- Map ---------- */
+.map {
+  position: relative;
+  display: flex;
+  flex-direction: column-reverse; /* floor 1 at the bottom */
+  gap: 10px;
+  align-items: center;
+}
+.map-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  width: 100%;
+  max-width: 640px;
+}
+.map-row button {
+  width: 100%;
+  padding: 8px 2px;
+  position: relative;
+  z-index: 1; /* above the lines */
+}
+.map-row .done {
+  background: #4a6b4a;
+  color: #ddd;
+}
+.map-lines {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+
+/* ---------- Other screens ---------- */
+.hero-card {
+  width: 260px;
+  padding: 16px;
+}
+.hero-text {
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+.hero-stats {
+  font-size: 13px;
+  text-align: left;
+  margin-bottom: 12px;
+}
+.item-box {
+  max-width: 190px;
+}
+.item-icon {
+  font-size: 32px;
+}
+.item-icon.big {
+  font-size: 40px;
+}
+.item-text {
+  margin: 4px 0 8px;
+}
+.under-card {
+  margin-top: 6px;
+}
+.event-text,
+.ancient-quote {
+  max-width: 520px;
+  margin: 0 auto 14px;
+}
+.ancient-quote {
+  font-style: italic;
+}
