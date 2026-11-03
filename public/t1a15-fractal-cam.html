@@ -1,0 +1,196 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Mandelbrot</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#000}
+canvas{display:block;width:100vw;height:100vh;cursor:grab;touch-action:none}
+canvas:active{cursor:grabbing}
+#i{position:fixed;left:10px;bottom:8px;color:#fffa;font:12px monospace;pointer-events:none;text-shadow:0 0 4px #000}
+</style>
+<canvas id="c"></canvas>
+<div id="i"></div>
+<script>
+const c = document.getElementById('c'), ctx = c.getContext('2d'), info = document.getElementById('i');
+const layer = document.createElement('canvas'), lctx = layer.getContext('2d');
+const dpr = Math.min(devicePixelRatio || 1, 1.5);
+
+// Centre is a 1000-bit fixed-point BigInt, so zoom can go to ~1e280.
+// Pixels are computed with perturbation theory: one high-precision reference
+// orbit at the centre, then cheap double-precision deltas per pixel.
+const PREC = 1000, SCALE = 2 ** PREC, INV = 2 ** -PREC;
+const toNum = b => Number(b) * INV;
+const fromNum = v => BigInt(Math.round(v * SCALE));
+
+const N = 1024, pal = new Uint32Array(N);
+for (let i = 0; i < N; i++) {
+  const t = i / N, f = k => Math.round(255 * (0.5 + 0.5 * Math.cos(2 * Math.PI * (t + k))));
+  pal[i] = (255 << 24) | (f(0.67) << 16) | (f(0.33) << 8) | f(0);
+}
+
+const PRESETS = [
+  [-0.743643887037151, 0.131825904205330],
+  [-0.10109636384562, 0.95628651080914],
+  [-1.74995768370609, -0.00000000000003],
+  [0.2549870375144766, 0.0005679790528465],
+  [-0.7746806106269039, -0.1374168856037867]
+];
+const START_PS = 0.0035, GUIDE_PS = 2e-7;
+let W, H, cx, cy, ps, auto = true, done = null, job = null, target = null, pre;
+
+function reset() {
+  cx = fromNum(-0.5); cy = 0n; ps = START_PS; done = null; job = null; target = null;
+  pre = PRESETS[Math.random() * PRESETS.length | 0];
+}
+
+function resize() {
+  W = c.width = Math.floor(innerWidth * dpr);
+  H = c.height = Math.floor(innerHeight * dpr);
+  done = null; job = null;
+}
+
+function startJob() {
+  const rw = auto ? Math.min(W, 560) : W, rh = Math.round(H * rw / W);
+  const cap = Math.floor(200 + 50 * Math.log2(Math.max(START_PS / ps, 1)));
+  const img = new ImageData(rw, rh);
+  job = { cx, cy, ps, rw, rh, cap, W, img, buf: new Uint32Array(img.data.buffer),
+          it: new Float32Array(rw * rh), passes: auto ? [1] : [8, 2, 1], p: 0, y: 0 };
+  // high-precision reference orbit at the view centre
+  const P = Math.min(PREC, Math.max(96, Math.ceil(-Math.log2(ps)) + 96));
+  const sh = BigInt(PREC - P), Pn = BigInt(P), P1 = Pn - 1n, sc = 2 ** -P;
+  const cr = cx >> sh, ci = cy >> sh, n = cap + 2;
+  const ZR = new Float64Array(n), ZI = new Float64Array(n);
+  let zr = 0n, zi = 0n, L = 1;
+  while (L < n) {
+    const zr2 = (zr * zr) >> Pn, zi2 = (zi * zi) >> Pn;
+    zi = ((zr * zi) >> P1) + ci; zr = zr2 - zi2 + cr;
+    const a = Number(zr) * sc, b = Number(zi) * sc;
+    ZR[L] = a; ZI[L] = b; L++;
+    if (a * a + b * b > 1e6) break;
+  }
+  job.ZR = ZR; job.ZI = ZI; job.L = L;
+}
+
+function work(budget) {
+  const j = job, t0 = performance.now(), { rw, rh, cap, ZR, ZI, buf, it } = j, L1 = j.L - 1;
+  const step = j.passes[j.p], rps = j.ps * j.W / rw, hw = rw / 2, hh = rh / 2;
+  while (j.y < rh && performance.now() - t0 < budget) {
+    const y = j.y, dci = (y - hh) * rps, ye = Math.min(y + step, rh);
+    for (let x = 0; x < rw; x += step) {
+      const dcr = (x - hw) * rps;
+      let dr = 0, di = 0, m = 0, i = 0, col = 0xff000000, val = -1;
+      while (i < cap) {
+        const a = ZR[m], b = ZI[m];
+        const nr = 2 * (a * dr - b * di) + dr * dr - di * di + dcr;
+        di = 2 * (a * di + b * dr) + 2 * dr * di + dci; dr = nr; m++; i++;
+        const zr = ZR[m] + dr, zi = ZI[m] + di, mag = zr * zr + zi * zi;
+        if (mag > 1e4) { val = i + 1 - Math.log2(Math.log(mag) / 2); col = pal[(val * 10) & 1023]; break; }
+        if (mag < dr * dr + di * di || m >= L1) { dr = zr; di = zi; m = 0; } // rebase
+      }
+      const xe = Math.min(x + step, rw);
+      for (let yy = y; yy < ye; yy++) { const r = yy * rw; for (let xx = x; xx < xe; xx++) { buf[r + xx] = col; it[r + xx] = val; } }
+    }
+    j.y += step;
+  }
+  if (j.y >= rh) {
+    if (layer.width !== rw || layer.height !== rh) { layer.width = rw; layer.height = rh; }
+    lctx.putImageData(j.img, 0, 0);
+    done = { cx: j.cx, cy: j.cy, ps: j.ps, rw, rh };
+    j.p++; j.y = 0;
+    if (j.p >= j.passes.length) { if (auto && j.ps < GUIDE_PS) pickTarget(j); job = null; }
+  }
+}
+
+// Autopilot: aim at a deep-escaping pixel near the middle so we stay on the boundary
+function pickTarget(j) {
+  const { rw, rh, it, cap } = j;
+  let best = -1, bx = 0, by = 0;
+  for (let y = rh * 0.2 | 0; y < rh * 0.8; y++) for (let x = rw * 0.2 | 0; x < rw * 0.8; x++) {
+    const v = it[y * rw + x];
+    if (v < 0 || v > 0.9 * cap) continue;
+    const d = Math.hypot((x - rw / 2) / (rw / 2), (y - rh / 2) / (rh / 2));
+    const s = v * (1 - 0.5 * d);
+    if (s > best) { best = s; bx = x; by = y; }
+  }
+  if (best < 0) return;
+  const rps = j.ps * j.W / rw;
+  target = { x: j.cx + fromNum((bx - rw / 2) * rps), y: j.cy + fromNum((by - rh / 2) * rps) };
+}
+
+function steer(dt) {
+  const t = ps > GUIDE_PS ? { x: fromNum(pre[0]), y: fromNum(pre[1]) } : target;
+  if (!t) return;
+  const k = 1 - Math.exp(-dt);
+  cx += BigInt(Math.round(Number(t.x - cx) * k));
+  cy += BigInt(Math.round(Number(t.y - cy) * k));
+}
+
+function draw() {
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  if (!done) return;
+  const s = done.ps / ps * W / done.rw;
+  const sx = W / 2 + toNum(done.cx - cx) / ps, sy = H / 2 + toNum(done.cy - cy) / ps;
+  ctx.drawImage(layer, sx - done.rw * s / 2, sy - done.rh * s / 2, done.rw * s, done.rh * s);
+}
+
+let last = performance.now(), n = 0;
+function frame(now) {
+  const dt = Math.min((now - last) / 1000, 0.05); last = now;
+  if (auto) {
+    if (done && done.ps / ps < 2.2) ps *= Math.exp(-0.6 * dt); // slow down if rendering lags
+    steer(dt);
+    if (ps < 1e-278) reset(); // hit the precision floor: start a new dive
+  }
+  if (job && !auto && (job.cx !== cx || job.cy !== cy || job.ps !== ps)) job = null;
+  if (!job && (!done || done.cx !== cx || done.cy !== cy || done.ps !== ps)) startJob();
+  if (job) work(auto ? 10 : 14);
+  draw();
+  if (++n % 10 === 0) info.textContent = `zoom ${(START_PS / ps).toExponential(2)}× · ${auto ? 'autopilot' : 'manual'} · space toggles · scroll/pinch, drag, dbl-click · R restart`;
+  requestAnimationFrame(frame);
+}
+
+function zoomAt(mx, my, f) {
+  const nps = Math.min(Math.max(ps * f, 1e-280), 4);
+  cx += fromNum((mx - W / 2) * (ps - nps));
+  cy += fromNum((my - H / 2) * (ps - nps));
+  ps = nps;
+}
+
+c.addEventListener('wheel', e => {
+  e.preventDefault(); auto = false;
+  zoomAt(e.clientX * dpr, e.clientY * dpr, Math.exp(e.deltaY * 0.0015));
+}, { passive: false });
+c.addEventListener('dblclick', e => { auto = false; zoomAt(e.clientX * dpr, e.clientY * dpr, 0.4); });
+
+const ptrs = new Map();
+let lastDist = 0;
+c.addEventListener('pointerdown', e => { c.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, e); lastDist = 0; });
+c.addEventListener('pointerup', e => { ptrs.delete(e.pointerId); lastDist = 0; });
+c.addEventListener('pointercancel', e => { ptrs.delete(e.pointerId); lastDist = 0; });
+c.addEventListener('pointermove', e => {
+  const prev = ptrs.get(e.pointerId);
+  if (!prev) return;
+  auto = false;
+  if (ptrs.size === 1) {
+    cx -= fromNum((e.clientX - prev.clientX) * dpr * ps);
+    cy -= fromNum((e.clientY - prev.clientY) * dpr * ps);
+    ptrs.set(e.pointerId, e);
+  } else if (ptrs.size === 2) {
+    ptrs.set(e.pointerId, e);
+    const [a, b] = [...ptrs.values()], d = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+    if (lastDist) zoomAt((a.clientX + b.clientX) / 2 * dpr, (a.clientY + b.clientY) / 2 * dpr, lastDist / d);
+    lastDist = d;
+  }
+});
+
+addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); auto = !auto; }
+  if (e.key === 'r' || e.key === 'R') { reset(); auto = true; }
+  if (e.key === '+' || e.key === '=') { auto = false; zoomAt(W / 2, H / 2, 0.6); }
+  if (e.key === '-' || e.key === '_') { auto = false; zoomAt(W / 2, H / 2, 1.6); }
+});
+addEventListener('resize', resize);
+
+reset(); resize();
+requestAnimationFrame(frame);
+</script>
