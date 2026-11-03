@@ -1,0 +1,41 @@
+<h1>t1a16-power-up-cam.html</h1>
+
+<script>
+
+  let myHero = {
+    'name' : 'John Code',
+    'power' : 100,
+    'comment' : 'Ready to Train!',
+    'strength' : 0,
+  }
+  
+  function deadHero() {
+    alert(' You Lost ')
+    myHero.power = 100
+    myHero.strength = 0
+  }
+    
+</script>
+
+<input type=button value="Train the hero!" onClick="{
+  myHero.power = myHero.power - 10
+  myHero.strength = myHero.strength + 1
+  if (myHero.power > 50) { myHero.comment = 'Trained! Feeling Good!' } else
+  if (myHero.power <= 50 && myHero.power > 20) { myHero.comment = 'Trained! Slowing down...' } else
+  if (myHero.power <= 20 && myHero.power > 0) { myHero.comment = 'Trained! Getting Exhausted.' } else
+  if (myHero.power <= 0) { deadHero() }
+  document.getElementById('myDiv01').innerHTML = myHero.comment + '<br>' + 'The hero has ' + myHero.power + ' power left!' + 'The hero has ' + myHero.strength + ' strength points!'
+  }"><br>
+
+<input type=button value="Test your might!" onClick="{
+    if (myHero.strength >= 5) { myHero.comment = 'You beat the strength test!' } else { myHero.comment = 'You need to train more!' }
+    document.getElementById('myDiv01').innerHTML = myHero.comment
+  }"><br>
+
+<input type=button value="Rest up!" onClick="{
+  myHero.power = myHero.power + 30
+  myHero.comment = 'The hero has rested a bit! Gained +30 power!'
+  document.getElementById('myDiv01').innerHTML = myHero.comment
+  }"><br><br>
+
+<div id="myDiv01">Press the button to train your hero!</div>
