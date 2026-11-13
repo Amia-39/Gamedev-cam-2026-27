@@ -1,0 +1,55 @@
+<style>
+body {
+	background-color: #000000;
+	color: #ddaacc;
+}
+</style>
+
+<h2 align=center>t2a20-sort-cam.html</h2>
+
+<script>
+  let myMax = 30
+  let myCards = new Array(myMax)
+</script>
+
+<input type="button" value="Set Random" onclick="{
+  myCards = Array.from({ length: 1000 }, (_, i) => i) // [0,1,2,...,51]
+
+    for (let i = myCards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[myCards[i], myCards[j]] = [myCards[j], myCards[i]]
+    }
+  let myTemp = ''
+  for ( let myLoop = 0; myLoop < myMax; myLoop++ ) {
+    myTemp += myLoop + ' = '+ myCards[myLoop] + '<br>'
+  }
+  document.getElementById('myDiv01').innerHTML = myTemp
+}">
+
+<!-- <input type="button" value="Show" onclick="{
+  let myTemp = ''
+  for ( let myLoop = 0; myLoop < myMax; myLoop++ ) {
+    myTemp += myLoop + ' = '+ myCards[myLoop] + '<br>'
+  }
+  document.getElementById('myDiv01').innerHTML = myTemp
+}">-->
+
+<input type="button" value="Sort" onclick="{
+  for (let i = 0; i < myMax - 1; i++) {
+    for (let j = 0; j < myMax - 1 - i; j++) {
+      if (myCards[j] > myCards[j + 1]) {
+        let myTemp = myCards[j];
+        myCards[j] = myCards[j + 1];
+        myCards[j + 1] = myTemp;
+      }
+    }
+  }
+  let myTemp = ''
+  for ( let myLoop = 0; myLoop < myMax; myLoop++ ) {
+    myTemp += myLoop + ' = '+ myCards[myLoop] + '<br>'
+  }
+  document.getElementById('myDiv01').innerHTML = myTemp
+}">
+
+
+<div id="myDiv01">...</div>
