@@ -1,0 +1,64 @@
+<style>
+body {
+	background-color: #000000;
+	color: #ddaacc;
+}
+</style>
+
+<h2 align=center>t2a23-canvas-cam.html</h2>
+
+<input type="button" value="Draw" onclick="{
+  myContext.clearRect(0, 0, myCanvas.width, myCanvas.height);
+
+  //Line
+  myContext.beginPath();
+  myContext.lineWidth = 3;
+  myContext.strokeStyle = '#000000';
+  myContext.moveTo(20, 20);
+  myContext.lineTo(150, 20);
+  myContext.stroke();
+
+  //Solid Rectangle
+  myContext.fillStyle = '#8000ff';
+  myContext.fillRect(30, 50, 100, 60); // x, y, width, height
+
+  //Draw a Circle
+  myContext.beginPath();
+  myContext.lineWidth = 5;
+  myContext.strokeStyle = '#ff8000';
+  myContext.arc(220, 80, 40, 0, 2 * Math.PI); // x, y, radius, start, end
+  myContext.stroke();
+  
+  //Write Text
+  myContext.fillStyle = '#000000';
+  myContext.font = '24px Arial';
+  myContext.fillText('I spent WAY too long', 30, 180); //'text', x, y
+  myContext.fillText('making a PENTAGON', 30, 210);
+  myContext.fillText('OF ALL THINGS', 30, 240);
+
+  //Draw a Pentagon
+  myContext.save();
+  myContext.translate(375, 75);
+  myContext.rotate((Math.PI / -2)); 
+  myContext.beginPath();
+  myContext.lineWidth = 3;
+  myContext.strokeStyle = '#000000';
+  myContext.fillStyle = '#00ff00';
+  myContext.moveTo(50, 0);
+  myContext.lineTo(0, 56.25);
+  myContext.lineTo(-65.625, 37.5);
+  myContext.lineTo(-65.625, -37.5);
+  myContext.lineTo(0, -56.25);
+  myContext.closePath();
+  myContext.fill();
+  myContext.stroke();
+  myContext.restore();
+
+}"><br><br>
+
+<canvas id="Bwah" width=500 height=300 style="border:1px solid #000000; background-color: #ffffff"></canvas>
+
+<script>
+  const myCanvas = document.getElementById('Bwah');
+  const myContext = myCanvas.getContext('2d');
+</script>
