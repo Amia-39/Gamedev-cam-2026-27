@@ -1,0 +1,154 @@
+<style>
+body {
+	background-color: #000000;
+	color: #ddaacc;
+}
+</style>
+
+<h2 align=center>t2a22-local-storage-cam.html</h2>
+
+Use local storage to make a to-do list<br><br>
+
+
+<body onload="loadTasks()">
+
+    <input
+        id="myText1"
+        type="text"
+        size="40"
+        placeholder="Enter a task"
+    >
+
+    <input
+        type="button"
+        value="Add Task"
+        onclick="addTask()"
+    >
+
+    <br><br>
+
+    <div id="taskList"></div>
+
+    <script>
+
+        // Load saved tasks when the page opens
+        let tasks = [];
+
+        function loadTasks() {
+
+            let myStorage = localStorage.getItem("myStoredTasks");
+
+            if (myStorage != null) {
+                tasks = JSON.parse(myStorage);
+            }
+
+            displayTasks();
+        }
+
+
+        // Save tasks to local storage
+        function saveTasks() {
+
+            localStorage.setItem(
+                "myStoredTasks",
+                JSON.stringify(tasks)
+            );
+
+        }
+
+
+        // Add a new task
+        function addTask() {
+
+            let newTask = document.getElementById("myText1").value;
+
+            if (newTask.trim() == "") {
+                alert("Please enter a task!");
+                return;
+            }
+
+            tasks.push({
+                text: newTask,
+                completed: false
+            });
+
+            document.getElementById("myText1").value = "";
+
+            saveTasks();
+            displayTasks();
+
+        }
+
+
+        // Display all tasks
+        function displayTasks() {
+
+            let output = "";
+
+            for (let i = 0; i < tasks.length; i++) {
+
+                output += `
+                    <div>
+                        <input
+                            type="checkbox"
+                            ${tasks[i].completed ? "checked" : ""}
+                            onchange="completeTask(${i})"
+                        >
+
+                        <span style="${tasks[i].completed ? 'text-decoration: line-through;' : ''}">
+                            ${escapeHTML(tasks[i].text)}
+                        </span>
+
+                        <button onclick="deleteTask(${i})">
+                            Delete
+                        </button>
+                    </div>
+                `;
+
+            }
+
+            document.getElementById("taskList").innerHTML = output;
+
+        }
+
+
+        // Mark a task completed or incomplete
+        function completeTask(index) {
+
+            tasks[index].completed = !tasks[index].completed;
+
+            saveTasks();
+            displayTasks();
+
+        }
+
+
+        // Delete a task
+        function deleteTask(index) {
+
+            tasks.splice(index, 1);
+
+            saveTasks();
+            displayTasks();
+
+        }
+
+
+        // Prevent HTML from being interpreted inside task names
+        function escapeHTML(text) {
+
+            return text.replace(/[&<>"']/g, function(character) {
+                return {
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                    "'": "&#39;"
+                }[character];
+            });
+
+        }
+
+    </script>
+
+
