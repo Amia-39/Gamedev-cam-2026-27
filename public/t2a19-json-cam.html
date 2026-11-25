@@ -9,22 +9,67 @@ body {
 
 <script>
 async function fetchData(url) {
-  const response = await fetch(url);
-  const data = await response.json();
-  console.log(data);
+  if (!url) return;
 
-  const myJson =JSON.stringify(data, null, 2);
-  document.getElementById("myDiv01").innerHTML = `<pre>${myJson}</pre>`;
+  try {
+    const response = await fetch(url);
 
-  document.getElementById("myDiv01").innerHTML += `<img src="${data.image}" alt="Random Image" style="max-width: 100%; height: auto;">`;
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
 
+    const data = await response.json();
+    const output = document.getElementById("myDiv01");
+
+    // Display the whole JSON response as text.
+    output.textContent = JSON.stringify(data, null, 2);
+
+    // Support several possible response fields.
+    const imageUrl = data.image ||
+                     data.message ||
+                     data.url ||
+                     (Array.isArray(data) && data[0].url) ||
+                     (data.sprites && data.sprites.front_default);
+
+    const text = data.text ||
+                 data.activity ||
+                 data.name ||
+                 (data.setup && data.punchline
+                   ? data.setup + " - " + data.punchline
+                   : null) ||
+                 (data.setup && data.delivery
+                   ? data.setup + " - " + data.delivery
+                   : null);
+
+    if (text) {
+      const paragraph = document.createElement("p");
+      paragraph.textContent = text;
+      output.appendChild(paragraph);
+    }
+
+    if (imageUrl) {
+      const image = document.createElement("img");
+      image.src = imageUrl;
+      image.alt = text || "API image";
+      image.style.maxWidth = "100%";
+      image.style.height = "auto";
+      output.appendChild(image);
+    }
+  } catch (error) {
+    document.getElementById("myDiv01").textContent =
+      "Could not load the API: " + error.message;
+  }
 }
 </script>
 
 <select id="mySelect" size="1" onchange="fetchData(this.value)">
-  <option ></option>
-  <option value="https://randomfox.ca/floof/">Random Fox</option>  
-
+  <option value=""></option>
+  <option value="https://randomfox.ca/floof/">Random Fox</option>
+  <option value="https://dog.ceo/api/breeds/image/random">Random Dog</option>
+  <option value="https://api.thecatapi.com/v1/images/search">Random Cat</option>
+  <option value="https://pokeapi.co/api/v2/pokemon/pikachu">Random Pikachu</option>
+  <option value="https://www.boredapi.com/api/activity">Bored API (Kinda Lame)</option>
+  <option value="https://v2.jokeapi.dev/joke/Any?safe-mode">Random Joke (Filtered)</option>
 </select>
 
 <div id="myDiv01">...</div>
