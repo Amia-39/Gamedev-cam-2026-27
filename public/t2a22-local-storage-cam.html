@@ -12,56 +12,36 @@ Use local storage to make a to-do list<br><br>
 
 <body onload="loadTasks()">
 
-    <input
-        id="myText1"
-        type="text"
-        size="40"
-        placeholder="Enter a task"
-    >
+    <input id="myText1" type="text" size="40" placeholder="Enter a task">
 
-    <input
-        type="button"
-        value="Add Task"
-        onclick="addTask()"
-    >
-
-    <br><br>
+    <input type="button" value="Add Task" onclick="addTask()"><br><br>
 
     <div id="taskList"></div>
 
     <script>
-
         // Load saved tasks when the page opens
         let tasks = [];
-
+		
         function loadTasks() {
-
             let myStorage = localStorage.getItem("myStoredTasks");
-
             if (myStorage != null) {
                 tasks = JSON.parse(myStorage);
             }
-
             displayTasks();
         }
 
-
         // Save tasks to local storage
         function saveTasks() {
-
             localStorage.setItem(
                 "myStoredTasks",
                 JSON.stringify(tasks)
             );
-
         }
-
 
         // Add a new task
         function addTask() {
-
             let newTask = document.getElementById("myText1").value;
-
+			
             if (newTask.trim() == "") {
                 alert("Please enter a task!");
                 return;
@@ -73,7 +53,7 @@ Use local storage to make a to-do list<br><br>
             });
 
             document.getElementById("myText1").value = "";
-
+			
             saveTasks();
             displayTasks();
 
@@ -82,7 +62,6 @@ Use local storage to make a to-do list<br><br>
 
         // Display all tasks
         function displayTasks() {
-
             let output = "";
 
             for (let i = 0; i < tasks.length; i++) {
@@ -114,7 +93,6 @@ Use local storage to make a to-do list<br><br>
 
         // Mark a task completed or incomplete
         function completeTask(index) {
-
             tasks[index].completed = !tasks[index].completed;
 
             saveTasks();
@@ -125,7 +103,6 @@ Use local storage to make a to-do list<br><br>
 
         // Delete a task
         function deleteTask(index) {
-
             tasks.splice(index, 1);
 
             saveTasks();
@@ -136,7 +113,6 @@ Use local storage to make a to-do list<br><br>
 
         // Prevent HTML from being interpreted inside task names
         function escapeHTML(text) {
-
             return text.replace(/[&<>"']/g, function(character) {
                 return {
                     "&": "&amp;",
@@ -146,9 +122,5 @@ Use local storage to make a to-do list<br><br>
                     "'": "&#39;"
                 }[character];
             });
-
         }
-
     </script>
-
-
